@@ -1,5 +1,11 @@
 package chip8
 
+const kMemorySize = 4096
+const kStackSize = 16
+const kNumRegisters = 16
+const kDisplaySize = 64 * 32
+const kKeypadSize = 16
+
 var Fontset = [...]uint8 {
     0xF0, 0x90, 0x90, 0x90, 0xF0, //0
     0x20, 0x60, 0x20, 0x20, 0x70, //1
