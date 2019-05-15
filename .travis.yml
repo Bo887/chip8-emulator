@@ -5,5 +5,8 @@ go:
 env:
     - GO111MODULE=on
 
+before_script:
+    - make deps
+
 script:
     - make test
