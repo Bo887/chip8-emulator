@@ -24,8 +24,7 @@ func CreateCpu() Cpu {
     for i := range Fontset {
         rv.Memory[i] = Fontset[i]
     }
-    //.text starts at 0x200
-    rv.PC = 0x200
+    rv.PC = kPCStart
     return rv
 }
 

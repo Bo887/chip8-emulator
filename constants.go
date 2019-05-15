@@ -5,6 +5,7 @@ const kStackSize = 16
 const kNumRegisters = 16
 const kDisplaySize = 64 * 32
 const kKeypadSize = 16
+const kPCStart = 0x200
 
 var Fontset = [...]uint8 {
     0xF0, 0x90, 0x90, 0x90, 0xF0, //0
