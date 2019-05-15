@@ -5,43 +5,25 @@ import (
 )
 
 type Cpu struct {
-    //opcode
     Opcode uint16
-
-    //memory
     Memory [4096]uint8
-
-    //stack
     Stack [16]uint16
-
-    //registers (V0 -> VF)
-    V [16]uint8
-
-    //index register 
-    I uint16
-
-    //program counter
-    PC uint16
-
-    //stack pointer
-    SP uint16
-
-    //delay timer
+    V [16]uint8 //main registers (V0 -> VF)
+    I uint16 //index register
+    PC uint16 //program counter
+    SP uint16 //stack pointer
     DelayTimer uint8
-
-    //sound timer
     SoundTimer uint8
-
-    //graphics
     Display [64 * 32]uint8
-
-    //keypad
     Keypad [16]uint8
 }
 
 func CreateCpu() Cpu {
     rv := Cpu{}
-    //program counter starts at 0x200
+    //.text starts at 0x200
     rv.PC = 0x200
+    for i := range Fontset {
+        rv.Memory[i] = Fontset[i]
+    }
     return rv
 }
