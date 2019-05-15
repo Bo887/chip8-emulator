@@ -1,4 +1,4 @@
-package chip8emulator
+package chip8
 
 import (
 //    "fmt"
@@ -37,4 +37,11 @@ type Cpu struct {
 
     //keypad
     Keypad [16]uint8
+}
+
+func CreateCpu() Cpu {
+    rv := Cpu{}
+    //program counter starts at 0x200
+    rv.PC = 0x200
+    return rv
 }
