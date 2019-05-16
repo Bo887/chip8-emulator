@@ -14,7 +14,9 @@ clean:
 
 deps:
 	$(GOGET) github.com/golangci/golangci-lint/cmd/golangci-lint
+	$(GOGET) github.com/stretchr/testify/assert
+	$(GOGET) code.google.com/p/go.tools/cmd/cover
 
 test:
 	golangci-lint run
-	$(GOTEST) -v ./test
+	$(GOTEST) -v -coverpkg ./... ./test
