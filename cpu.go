@@ -7,16 +7,17 @@ import (
 
 type Cpu struct {
     Opcode uint16
-    Memory [kMemorySize]uint8
-    Stack [kStackSize]uint16
-    V [kNumRegisters]uint8 //main registers (V0 -> VF)
+    Memory [MEMORY_SIZE]uint8
+    Stack [STACK_SIZE]uint16
+    V [NUM_REGISTERS]uint8 //main registers (V0 -> VF)
     I uint16 //index register
     PC uint16 //program counter
     SP uint16 //stack pointer
     DelayTimer uint8
     SoundTimer uint8
-    Display [kDisplaySize]uint8
-    Keypad [kKeypadSize]uint8
+    Display [NUM_COLS * NUM_ROWS]uint8
+    Keypad [KEYPAD_SIZE]uint8
+    ShouldDraw bool
 }
 
 func CreateCpu() Cpu {
@@ -24,7 +25,7 @@ func CreateCpu() Cpu {
     for i := range Fontset {
         rv.Memory[i] = Fontset[i]
     }
-    rv.PC = kPCStart
+    rv.PC = PC_START
     return rv
 }
 

@@ -515,3 +515,35 @@ func TestCXNNOpcode(t *testing.T) {
 
     assert.NotEqual(t, first_res, second_res)
 }
+
+func TestDXYNOpcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.I = 0x0BAD
+    cpu.Memory[cpu.I] = 0x3C
+    cpu.Memory[cpu.I + 1] = 0xC3
+    cpu.Memory[cpu.I + 2] = 0xFF
+    cpu.PC = 0xCAFE
+
+    cpu.Opcode = 0xD003
+    err := cpu.HandleOpcode()
+    assert.Nil(t, err)
+    assert.Equal(t, uint8(0), cpu.V[0xF])
+    for i := 0; i < 8; i++ {
+        if i < 2 || i >= 6 {
+            assert.Equal(t, cpu.Display[i], uint8(0))
+            assert.Equal(t, cpu.Display[chip8.NUM_COLS + i], uint8(1))
+        } else {
+            assert.Equal(t, cpu.Display[i], uint8(1))
+            assert.Equal(t, cpu.Display[chip8.NUM_COLS + i], uint8(0))
+        }
+    }
+    for i := 0; i < 8; i++ {
+        assert.Equal(t, cpu.Display[chip8.NUM_COLS*2 + i], uint8(1))
+    }
+
+    //test for a collision
+    cpu.Opcode = 0xD113
+    err = cpu.HandleOpcode()
+    assert.Nil(t, err)
+    assert.Equal(t, uint8(1), cpu.V[0xF])
+}

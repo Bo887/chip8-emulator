@@ -1,11 +1,12 @@
 package chip8
 
-const kMemorySize = 4096
-const kStackSize = 16
-const kNumRegisters = 16
-const kDisplaySize = 64 * 32
-const kKeypadSize = 16
-const kPCStart = 0x200
+const MEMORY_SIZE = 4096
+const STACK_SIZE = 16
+const NUM_REGISTERS = 16
+const NUM_COLS = 64
+const NUM_ROWS = 32
+const KEYPAD_SIZE = 16
+const PC_START= 0x200
 
 var Fontset = [...]uint8 {
     0xF0, 0x90, 0x90, 0x90, 0xF0, //0

@@ -35,6 +35,12 @@ func (cpu *Cpu) HandleOpcode() error {
         return cpu.HandleBNNNOpcode()
     case 0xC:
         return cpu.HandleCXNNOpcode(time.Now().UnixNano())
+    case 0xD:
+        return cpu.HandleDXYNOpcode()
+    case 0xE:
+        return cpu.HandleEXOpcodes()
+    case 0xF:
+        return cpu.HandleFXOpcodes()
     default:
         return errors.New("Unknown opcode in HandleOpcode()!")
     }
@@ -67,7 +73,7 @@ func (cpu *Cpu) Handle1NNNOpcode() error {
 
 //call function (jump-and-link) at address NNN
 func (cpu *Cpu) Handle2NNNOpcode() error {
-    if (cpu.SP >= kStackSize) {
+    if (cpu.SP >= STACK_SIZE) {
         return errors.New("Cannot call function! Stack is full!")
     }
     cpu.Stack[cpu.SP] = cpu.PC      //store current address in stack
@@ -233,5 +239,67 @@ func (cpu *Cpu) HandleCXNNOpcode(seed int64) error {
     rand_generator := rand.New(source)
     rand_num := uint8(rand_generator.Intn(256))
     cpu.V[x] = rand_num & nn
+    return nil
+}
+
+func (cpu *Cpu) HandleDXYNOpcode() error {
+    x := (cpu.Opcode & 0x0F00) >> 8
+    y := (cpu.Opcode & 0x00F0) >> 4
+    n := cpu.Opcode & 0x000F
+
+    cpu.V[0xF] = 0
+    for curr_y := uint16(0); curr_y < n; curr_y++ {
+        pixel := cpu.Memory[cpu.I + curr_y]
+        for curr_x := uint16(0); curr_x < 8; curr_x++ {
+            if (pixel & (0x80 >> curr_x)) != 0 {
+                idx := x + curr_x + (y + curr_y) * NUM_COLS
+                if cpu.Display[idx] == 1 {
+                    cpu.V[0xF] = 1
+                }
+                cpu.Display[idx] ^= 1
+            }
+        }
+    }
+    cpu.PC += 2
+    cpu.ShouldDraw = true
+    return nil
+}
+
+func (cpu *Cpu) HandleEXOpcodes() error {
+    switch cpu.Opcode & 0x00FF {
+    //skip next instruction if V[x] is pressed
+    case 0x9E:
+
+    //skip next instruction if V[x] is not pressed
+    case 0xA1:
+    default:
+        return errors.New("Unknown EX-- Opcode in HandleEXOpcode()!")
+    }
+    return nil
+}
+
+func (cpu *Cpu) HandleFXOpcodes() error {
+    switch cpu.Opcode & 0x00FF {
+    //V[x] = delay_timer
+    case 0x07:
+    //V[x] = key_press() (blocking!)
+    case 0x0A:
+    //delay_timer = V[x]
+    case 0x15:
+    //sound_timer = V[x]
+    case 0x18:
+    //I += V[x]
+    case 0x1E:
+    //I = address of sprite for char in V[x]
+    case 0x29:
+    //Memory[I, I+1, I+2] stores binary-coded decimal of V[x]
+    case 0x33:
+    //Memory[I:I+x] = V[0:x] (inclusive on both ends)
+    case 0x55:
+    //V[0:x] = Memory[I:I+x] (inclusive on both ends)
+    case 0x65:
+    default:
+        return errors.New("Unknown FX-- Opcode in HandleFXOpcode()!")
+    }
     return nil
 }

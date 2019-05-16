@@ -51,4 +51,6 @@ func TestDefaultValues(t *testing.T) {
     for _, elem := range cpu.Keypad{
         assert.Equal(t, uint8(0), elem)
     }
+
+    assert.False(t, cpu.ShouldDraw)
 }
