@@ -14,7 +14,7 @@ clean:
 
 deps:
 	$(GOGET) github.com/stretchr/testify/assert
-	$(GOGET) code.google.com/p/go.tools/cmd/cover
+	$(GOGET) golang.org/x/tools/cmd/cover
 
 test:
 	$(GOTEST) -v -coverpkg ./... ./test
