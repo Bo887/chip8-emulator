@@ -3,7 +3,7 @@ package test
 import (
     "testing"
     "github.com/stretchr/testify/assert"
-    "github.com/Bo887/chip8-emulator"
+    "github.com/Bo887/chip8-emulator/chip8"
 )
 
 var cpu = chip8.CreateCpu()

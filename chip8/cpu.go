@@ -1,7 +1,6 @@
 package chip8
 
 import (
-//    "fmt"
     "os"
 )
 
@@ -35,4 +34,5 @@ func (cpu *Cpu) LoadProgram(path string) {
         panic(err)
     }
     defer file.Close()
+    //TODO: actually load program
 }

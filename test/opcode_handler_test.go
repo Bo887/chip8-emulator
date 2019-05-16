@@ -3,7 +3,7 @@ package test
 import (
     "testing"
     "github.com/stretchr/testify/assert"
-    "github.com/Bo887/chip8-emulator"
+    "github.com/Bo887/chip8-emulator/chip8"
 )
 
 func Test00E0Opcode(t *testing.T) {
@@ -27,6 +27,13 @@ func Test00E0Opcode(t *testing.T) {
 
 func Test00EEOpcode(t *testing.T) {
     cpu := chip8.CreateCpu()
+    cpu.SP = 0
+    cpu.Opcode = 0x00EE
+    err := cpu.HandleOpcode()
+
+    assert.NotNil(t, err)
+
+
     cpu.SP = 1
     cpu.Stack[0] = 0xBEEF
     next_instruction := uint16(0xBEEF + 2)
@@ -35,7 +42,7 @@ func Test00EEOpcode(t *testing.T) {
     assert.Equal(t, uint16(0xDEAD), cpu.PC)
 
     cpu.Opcode = 0x00EE
-    err := cpu.HandleOpcode()
+    err = cpu.HandleOpcode()
 
     assert.Nil(t, err)
     assert.Equal(t, next_instruction, cpu.PC)

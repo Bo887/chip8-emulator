@@ -55,6 +55,9 @@ func (cpu *Cpu) Handle00Opcodes() error {
         }
     //return from function
     case 0x00EE:
+        if cpu.SP == 0 {
+            return errors.New("SP is 0! No functions to return from!")
+        }
         cpu.SP--
         cpu.PC = cpu.Stack[cpu.SP]
     default:
