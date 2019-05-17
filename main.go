@@ -1,11 +1,22 @@
 package main
 
 import (
-    //"github.com/Bo887/chip8-emulator/chip8"
-    "github.com/gdamore/tcell"
+    "github.com/Bo887/chip8-emulator/chip8"
+    //"github.com/gdamore/tcell"
 )
 
 func main() {
+    cpu := chip8.CreateCpu()
+    cpu.LoadProgram("roms/pong.ch8")
+
+    for {
+        err := cpu.Update()
+        if err != nil {
+            break
+        }
+    }
+
+    /*
     screen, err := tcell.NewScreen()
     if err != nil {
         panic(err)
@@ -25,4 +36,5 @@ func main() {
         }
     }
     screen.Fini()
+    */
 }

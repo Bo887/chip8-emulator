@@ -3,6 +3,7 @@ GOBUILD = $(GOCMD) build
 GOCLEAN = $(GOCMD) clean
 GOTEST = $(GOCMD) test
 GOGET = $(GOCMD) get
+GORUN = $(GOCMD) run
 
 .PHONY: test
 
@@ -16,6 +17,9 @@ deps:
 	$(GOGET) github.com/stretchr/testify/assert
 	$(GOGET) golang.org/x/tools/cmd/cover
 	$(GOGET) github.com/gdamore/tcell
+
+main:
+	$(GORUN) main.go
 
 test:
 	$(GOTEST) -v -coverpkg ./... ./test --race

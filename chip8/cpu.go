@@ -2,6 +2,9 @@ package chip8
 
 import (
     "os"
+    "bufio"
+    "time"
+    "errors"
 )
 
 type Cpu struct {
@@ -17,6 +20,7 @@ type Cpu struct {
     Display [NUM_COLS * NUM_ROWS]uint8
     Keypad [KEYPAD_SIZE]uint8
     ShouldDraw bool
+    TimeController <-chan time.Time
 }
 
 func CreateCpu() Cpu {
@@ -25,14 +29,50 @@ func CreateCpu() Cpu {
         rv.Memory[i] = Fontset[i]
     }
     rv.PC = PC_START
+    rv.TimeController = time.Tick(time.Second/time.Duration(60))
     return rv
 }
 
-func (cpu *Cpu) LoadProgram(path string) {
+func (cpu *Cpu) LoadProgram(path string) error {
     file, err := os.Open(path)
     if err != nil {
-        panic(err)
+        return err
     }
     defer file.Close()
-    //TODO: actually load program
+
+    stats, err := file.Stat()
+    if err != nil {
+        return err
+    }
+
+    size := stats.Size()
+    if size > MEMORY_SIZE - PC_START {
+        return errors.New("Program will not fit in memory!")
+    }
+
+    bytes := make([]byte, size)
+    reader := bufio.NewReader(file)
+    _, err = reader.Read(bytes)
+    if err != nil {
+        return err
+    }
+
+    copy(cpu.Memory[PC_START:], bytes)
+    return nil
+}
+
+func (cpu *Cpu) Update() error {
+    cpu.Opcode = (uint16(cpu.Memory[cpu.PC]) << 8) | uint16(cpu.Memory[cpu.PC+1])
+    select {
+    case <-cpu.TimeController:
+        err := cpu.HandleOpcode()
+        if cpu.DelayTimer > 0 {
+            cpu.DelayTimer--
+        }
+        if cpu.SoundTimer > 0 {
+            cpu.SoundTimer--
+        }
+        return err
+    }
+    return nil
 }
