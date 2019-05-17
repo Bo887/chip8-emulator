@@ -554,3 +554,274 @@ func TestDXYNOpcode(t *testing.T) {
     assert.Nil(t, err)
     assert.Equal(t, uint8(1), cpu.V[0xF])
 }
+
+func TestEX9EOpcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDEAD
+    cpu.V[4] = 0xA
+    cpu.Keypad[0xA] = 1
+    target_pc := uint16(0xDEAD + 4)
+
+    cpu.Opcode = 0xE49E
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+
+    cpu.Keypad[0xA] = 0
+    target_pc += 2
+
+    cpu.Opcode = 0xE49E
+    err = cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+}
+
+func TestEXA1Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDEAD
+    cpu.V[4] = 0xA
+    cpu.Keypad[0xA] = 1
+    target_pc := uint16(0xDEAD + 2)
+
+    cpu.Opcode = 0xE4A1
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+
+    cpu.Keypad[0xA] = 0
+    target_pc += 4
+
+    cpu.Opcode = 0xE4A1
+    err = cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+}
+
+func TestInvalidEXOpcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDEAD
+    target_pc := uint16(0xDEAD)
+
+    cpu.Opcode = 0xEF24
+    err := cpu.HandleOpcode()
+
+    assert.NotNil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+}
+
+func TestFX07Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDEAD
+    cpu.DelayTimer = 0xFC
+    target_pc := uint16(0xDEAD + 2)
+    target_vx := uint8(0xFC)
+
+    assert.Equal(t, uint8(0), cpu.V[3])
+    cpu.Opcode = 0xF307
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, target_vx, cpu.V[3])
+}
+
+func TestFX0AOpcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDEAD
+    target_pc := uint16(0xDEAD)
+
+    cpu.Opcode = 0xF40A
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+
+    cpu.Keypad[0xC] = 1
+    target_pc += 2
+    target_keypad_idx := uint8(0xC)
+
+    cpu.Opcode = 0xF40A
+    err = cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, target_keypad_idx, cpu.V[4])
+}
+
+func TestFX15Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDEAD
+    cpu.V[0xC] = 0xAB
+    target_pc := uint16(0xDEAD + 2)
+    target_delay_timer := uint8(0xAB)
+
+    cpu.Opcode = 0xFC15
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, target_delay_timer, cpu.DelayTimer)
+}
+
+func TestFX18Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDEAD
+    cpu.V[0x2] = 0xFF
+    target_pc := uint16(0xDEAD + 2)
+    target_sound_timer := uint8(0xFF)
+
+    cpu.Opcode = 0xF218
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, target_sound_timer, cpu.SoundTimer)
+}
+
+func TestFX1EOpcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xBEEF
+    cpu.V[5] = 0x0A
+    cpu.I = 0x02
+    target_pc := uint16(0xBEEF + 2)
+    target_i := uint16(0x0A + 0x02)
+    target_vf := uint8(0)
+
+    cpu.Opcode = 0xF51E
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, target_i, cpu.I)
+    assert.Equal(t, target_vf, cpu.V[0xF])
+
+    cpu.V[5] = 0x01
+    cpu.I = 0xFFFF
+    target_pc += 2
+    target_i = uint16(0x00)
+    target_vf = 1
+
+    cpu.Opcode = 0xF51E
+    err = cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, target_i, cpu.I)
+    assert.Equal(t, target_vf, cpu.V[0xF])
+}
+
+func TestFX29Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xBEEF
+    cpu.V[0] = 0xE
+    target_i := uint16(0xE * 5)
+    target_pc := uint16(0xBEEF + 2)
+
+    cpu.Opcode = 0xF029
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, target_i, cpu.I)
+}
+
+func TestFX33Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xBEEF
+    cpu.V[3] = 254
+    cpu.I = 0x0034
+    target_pc := uint16(0xBEEF + 2)
+
+    cpu.Opcode = 0xF333
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    assert.Equal(t, uint8(2), cpu.Memory[cpu.I])
+    assert.Equal(t, uint8(5), cpu.Memory[cpu.I+1])
+    assert.Equal(t, uint8(4), cpu.Memory[cpu.I+2])
+
+    cpu.I = 0xF00D
+
+    cpu.Opcode = 0xF333
+    err = cpu.HandleOpcode()
+
+    assert.NotNil(t, err)
+}
+
+func TestFX55Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    for i := 0; i < chip8.NUM_REGISTERS; i++ {
+        cpu.V[i] = uint8(i)
+    }
+    cpu.I = 0x0ABC
+    cpu.PC = 0xF00D
+    target_pc := uint16(0xF00D + 2)
+
+    cpu.Opcode = 0xF455
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    for i := 0; i < chip8.NUM_REGISTERS; i++ {
+        if i <= 4 {
+            assert.Equal(t, uint8(i), cpu.Memory[cpu.I + uint16(i)])
+        } else {
+            assert.Equal(t, uint8(0), cpu.Memory[cpu.I + uint16(i)])
+        }
+    }
+
+    cpu.I = chip8.MEMORY_SIZE - 8
+    cpu.Opcode = 0xF955
+    err = cpu.HandleOpcode()
+
+    assert.NotNil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+}
+
+func TestFX65Opcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    for i := 118; i < 150; i++ {
+        cpu.Memory[i] = uint8(i)
+    }
+    cpu.I = 118
+    cpu.PC = 0xF00D
+    target_pc := uint16(0xF00D + 2)
+
+    cpu.Opcode = 0xFC65
+    err := cpu.HandleOpcode()
+
+    assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+    for i := 0; i < chip8.NUM_REGISTERS; i++ {
+        if i <= 0xC {
+            assert.Equal(t, uint8(i) + 118, cpu.V[i])
+        } else {
+            assert.Equal(t, uint8(0), cpu.V[i])
+        }
+    }
+
+    cpu.I = chip8.MEMORY_SIZE - 8
+    cpu.Opcode = 0xF965
+    err = cpu.HandleOpcode()
+
+    assert.NotNil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+}
+
+func TestInvalidFXOpcode(t *testing.T) {
+    cpu := chip8.CreateCpu()
+    cpu.PC = 0xDAD
+
+    target_pc := uint16(0xDAD)
+
+    cpu.Opcode = 0xFCAB
+    err := cpu.HandleOpcode()
+
+    assert.NotNil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
+}

@@ -1,7 +1,7 @@
 package chip8
 
 import (
-    "io"
+//    "io"
 )
 
 var Keypad = [...]uint8 {
@@ -9,10 +9,4 @@ var Keypad = [...]uint8 {
     'Q', 'W', 'E', 'R',
     'A', 'S', 'D', 'F',
     'Z', 'X', 'C', 'V',
-}
-
-func ReadInput(reader io.ByteReader) {
-    value, err := reader.ReadByte()
-    println(value)
-    println(err)
 }

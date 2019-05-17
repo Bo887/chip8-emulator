@@ -18,4 +18,4 @@ deps:
 	$(GOGET) github.com/gdamore/tcell
 
 test:
-	$(GOTEST) -v -coverpkg ./... ./test
+	$(GOTEST) -v -coverpkg ./... ./test --race

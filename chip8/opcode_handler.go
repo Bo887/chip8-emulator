@@ -269,40 +269,85 @@ func (cpu *Cpu) HandleDXYNOpcode() error {
 }
 
 func (cpu *Cpu) HandleEXOpcodes() error {
+    x := (cpu.Opcode & 0x0F00) >> 8
     switch cpu.Opcode & 0x00FF {
     //skip next instruction if V[x] is pressed
     case 0x9E:
-
+        if cpu.Keypad[cpu.V[x]] != uint8(0){
+            cpu.PC += 2
+        }
     //skip next instruction if V[x] is not pressed
     case 0xA1:
+        if cpu.Keypad[cpu.V[x]] == uint8(0){
+            cpu.PC += 2
+        }
     default:
         return errors.New("Unknown EX-- Opcode in HandleEXOpcode()!")
     }
+    cpu.PC += 2
     return nil
 }
 
 func (cpu *Cpu) HandleFXOpcodes() error {
+    x := (cpu.Opcode & 0x0F00) >> 8
     switch cpu.Opcode & 0x00FF {
     //V[x] = delay_timer
     case 0x07:
+        cpu.V[x] = cpu.DelayTimer
     //V[x] = key_press() (blocking!)
     case 0x0A:
+        key_pressed := false
+        for i, elem := range cpu.Keypad {
+            if elem != 0 {
+                key_pressed = true
+                cpu.V[x] = uint8(i)
+            }
+        }
+        //keep on blocking (don't increment PC) if no keys have been pressed yet
+        if !key_pressed {
+            return nil
+        }
     //delay_timer = V[x]
     case 0x15:
+        cpu.DelayTimer = cpu.V[x]
     //sound_timer = V[x]
     case 0x18:
+        cpu.SoundTimer = cpu.V[x]
     //I += V[x]
     case 0x1E:
+        res := uint32(cpu.I) + uint32(cpu.V[x])
+        var carry uint8 = 0
+        if res > 0xFF {
+            carry = 1
+        }
+        cpu.I = uint16(res)
+        cpu.V[0xF] = carry
     //I = address of sprite for char in V[x]
     case 0x29:
+        cpu.I = uint16(cpu.V[x]) * 5
     //Memory[I, I+1, I+2] stores binary-coded decimal of V[x]
     case 0x33:
+        if cpu.I > MEMORY_SIZE - 3 {
+            return errors.New("I is too close to the memory limit for Opcode 0xFX33 to execute!")
+        }
+        cpu.Memory[cpu.I] = cpu.V[x] / 100
+        cpu.Memory[cpu.I+1] = (cpu.V[x] % 100) / 10
+        cpu.Memory[cpu.I+2] = cpu.V[x] % 10
     //Memory[I:I+x] = V[0:x] (inclusive on both ends)
     case 0x55:
+        if cpu.I > MEMORY_SIZE - x {
+            return errors.New("I is too close to the memory limit for Opcode 0xFX55 to execute!")
+        }
+        copy(cpu.Memory[cpu.I:], cpu.V[0:x+1])
     //V[0:x] = Memory[I:I+x] (inclusive on both ends)
     case 0x65:
+        if cpu.I > MEMORY_SIZE - x {
+            return errors.New("I is too close to the memory limit for Opcode 0xFX65 to execute!")
+        }
+        copy(cpu.V[0:], cpu.Memory[cpu.I:cpu.I+x+1])
     default:
         return errors.New("Unknown FX-- Opcode in HandleFXOpcode()!")
     }
+    cpu.PC += 2
     return nil
 }
