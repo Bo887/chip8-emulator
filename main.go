@@ -7,13 +7,9 @@ import (
 
 func main() {
     cpu := chip8.CreateCpu()
-    cpu.LoadProgram("roms/pong.ch8")
-
-    for {
-        err := cpu.Update()
-        if err != nil {
-            break
-        }
+    err := cpu.LoadProgram("roms/pong.ch8")
+    if err != nil {
+        println(err.Error())
     }
 
     /*
@@ -23,18 +19,27 @@ func main() {
     }
     screen.Init()
     screen.Show()
+    */
+
     for{
+        /*
         ev := screen.PollEvent()
-        switch ev := ev.(type) {
-        case *tcell.EventKey:
-            switch ev.Key() {
-            case tcell.KeyEscape, tcell.KeyEnter:
-                    return
-            case tcell.KeyRune:
-                print(ev.Rune())
-            }
+        done := cpu.UpdateKeys(ev)
+        if done {
+            break
+        }
+        */
+
+        err := cpu.Update()
+        if err != nil {
+            print(err.Error())
+            break
+        }
+
+        if cpu.ShouldDraw {
+            cpu.PrintScreen()
+            println()
         }
     }
-    screen.Fini()
-    */
+    //screen.Fini()
 }

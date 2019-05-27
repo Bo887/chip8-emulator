@@ -18,7 +18,7 @@ deps:
 	$(GOGET) golang.org/x/tools/cmd/cover
 	$(GOGET) github.com/gdamore/tcell
 
-main:
+run:
 	$(GORUN) main.go
 
 test:

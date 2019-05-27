@@ -1,7 +1,7 @@
 package chip8
 
 import (
-//    "fmt"
+    "fmt"
     "errors"
     "time"
     "math/rand"
@@ -42,7 +42,7 @@ func (cpu *Cpu) HandleOpcode() error {
     case 0xF:
         return cpu.HandleFXOpcodes()
     default:
-        return errors.New("Unknown opcode in HandleOpcode()!")
+        return errors.New(fmt.Sprintf("%d: Invalid Opcode in HandleOpcode()", cpu.Opcode))
     }
 }
 
@@ -61,7 +61,7 @@ func (cpu *Cpu) Handle00Opcodes() error {
         cpu.SP--
         cpu.PC = cpu.Stack[cpu.SP]
     default:
-        return errors.New("Invalid 00-- Opcode in Handle00Opcodes()!")
+        return errors.New(fmt.Sprintf("%d: Invalid Opcode in Handle00Opcodes()", cpu.Opcode))
     }
     cpu.PC += 2
     return nil
@@ -197,7 +197,7 @@ func (cpu *Cpu) Handle8XYOpcodes() error {
         cpu.V[0xF] = lsb
         cpu.V[x] <<= 1
     default:
-        return errors.New("Unknown opcode in 8XY-!")
+        return errors.New(fmt.Sprintf("%d: Invalid Opcode in Handle8XYOpcodes()", cpu.Opcode))
     }
     cpu.PC += 2
     return nil
@@ -246,8 +246,8 @@ func (cpu *Cpu) HandleCXNNOpcode(seed int64) error {
 }
 
 func (cpu *Cpu) HandleDXYNOpcode() error {
-    x := (cpu.Opcode & 0x0F00) >> 8
-    y := (cpu.Opcode & 0x00F0) >> 4
+    x := uint16(cpu.V[(cpu.Opcode & 0x0F00) >> 8])
+    y := uint16(cpu.V[(cpu.Opcode & 0x00F0) >> 4])
     n := cpu.Opcode & 0x000F
 
     cpu.V[0xF] = 0
@@ -282,7 +282,7 @@ func (cpu *Cpu) HandleEXOpcodes() error {
             cpu.PC += 2
         }
     default:
-        return errors.New("Unknown EX-- Opcode in HandleEXOpcode()!")
+        return errors.New(fmt.Sprintf("%d: Invalid Opcode in HandleEXOpcodes()", cpu.Opcode))
     }
     cpu.PC += 2
     return nil
@@ -346,7 +346,7 @@ func (cpu *Cpu) HandleFXOpcodes() error {
         }
         copy(cpu.V[0:], cpu.Memory[cpu.I:cpu.I+x+1])
     default:
-        return errors.New("Unknown FX-- Opcode in HandleFXOpcode()!")
+        return errors.New(fmt.Sprintf("%d: Invalid Opcode in HandleFXOpcodes()", cpu.Opcode))
     }
     cpu.PC += 2
     return nil
