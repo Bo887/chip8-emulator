@@ -10,11 +10,13 @@ func main() {
     err := cpu.LoadProgram("roms/pong.ch8")
     if err != nil {
         println(err.Error())
+        return
     }
 
     screen, err := tcell.NewScreen()
     if err != nil {
-        panic(err)
+        println(err.Error())
+        return
     }
 
     chip8.InitScreen(screen)
@@ -41,7 +43,7 @@ func main() {
 
         err := cpu.Update()
         if err != nil {
-            print(err.Error())
+            println(err.Error())
             break
         }
 

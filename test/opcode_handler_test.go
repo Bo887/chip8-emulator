@@ -497,27 +497,35 @@ func TestCXNNOpcode(t *testing.T) {
     cpu := chip8.CreateCpu()
     cpu.PC = 0xCAFE
     expected := uint8(250)
+    target_pc := uint16(0xCAFE + 2)
 
     //test with preset seed twice: should be same values
     cpu.Opcode = 0xC5FF
     err := cpu.HandleCXNNOpcode(0)
     assert.Nil(t, err)
     assert.Equal(t, expected, cpu.V[5])
+    assert.Equal(t, target_pc, cpu.PC)
 
     cpu.Opcode = 0xC5FF
+    target_pc += 2
     err = cpu.HandleCXNNOpcode(0)
     assert.Nil(t, err)
     assert.Equal(t, expected, cpu.V[5])
+    assert.Equal(t, target_pc, cpu.PC)
 
     //test with random seed twice: should be different values
     cpu.Opcode = 0xC5FF
+    target_pc += 2
     err = cpu.HandleOpcode()
     assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
     first_res := cpu.V[5]
 
     cpu.Opcode = 0xC5FF
+    target_pc += 2
     err = cpu.HandleOpcode()
     assert.Nil(t, err)
+    assert.Equal(t, target_pc, cpu.PC)
     second_res := cpu.V[5]
 
     assert.NotEqual(t, first_res, second_res)

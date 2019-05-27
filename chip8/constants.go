@@ -7,6 +7,7 @@ const NUM_COLS = 64
 const NUM_ROWS = 32
 const KEYPAD_SIZE = 16
 const PC_START = 0x200
+const FREQUENCY = 60
 
 var Fontset = [...]uint8 {
     0xF0, 0x90, 0x90, 0x90, 0xF0, //0

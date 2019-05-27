@@ -53,6 +53,7 @@ func (cpu *Cpu) Handle00Opcodes() error {
         for i := range cpu.Display {
             cpu.Display[i] = 0
         }
+        cpu.ShouldDraw = true
     //return from function
     case 0x00EE:
         if cpu.SP == 0 {
@@ -242,6 +243,7 @@ func (cpu *Cpu) HandleCXNNOpcode(seed int64) error {
     rand_generator := rand.New(source)
     rand_num := uint8(rand_generator.Intn(256))
     cpu.V[x] = rand_num & nn
+    cpu.PC += 2
     return nil
 }
 
@@ -269,7 +271,6 @@ func (cpu *Cpu) HandleDXYNOpcode() error {
 }
 
 func (cpu *Cpu) HandleEXOpcodes() error {
-    cpu.ShouldCheckKeys = true
     x := (cpu.Opcode & 0x0F00) >> 8
     switch cpu.Opcode & 0x00FF {
     //skip next instruction if V[x] is pressed

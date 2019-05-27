@@ -12,6 +12,9 @@ var Keypad = [...]uint8 {
 }
 
 func (cpu *Cpu) UpdateKeys (screen tcell.Screen) bool {
+    for i := range Keypad {
+        cpu.Keypad[i] = 0
+    }
     ev := screen.PollEvent()
     switch ev := ev.(type) {
     case *tcell.EventKey:
@@ -22,8 +25,6 @@ func (cpu *Cpu) UpdateKeys (screen tcell.Screen) bool {
             for i, elem := range Keypad {
                 if uint8(ev.Rune()) == elem {
                     cpu.Keypad[i] = 1
-                } else {
-                    cpu.Keypad[i] = 0
                 }
             }
         }
