@@ -27,3 +27,19 @@ $GOPATH/bin
 ```
 
 To remove the package, just simply delete the directory and the binary.
+
+## Usage
+The binary name is `chip8-emulator`. It takes a single argument of the path to the ROM. 
+
+For more information, run:
+```
+chip8-emulator --help
+```
+
+A few ROMS are located in the `roms/` directory from the project root. A lot more are located [here](https://github.com/dmatlack/chip8/tree/master/roms).
+
+For example, running:
+```
+chip8-emulator roms/chip8-picture
+```
+from the project root directory will display the chip8 logo.
