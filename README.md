@@ -1,7 +1,9 @@
 # CHIP-8 Emulator
 [![Build Status](https://travis-ci.com/Bo887/chip8-emulator.svg)](https://travis-ci.com/Bo887/chip8-emulator)
 
-A CHIP-8 emulator written in golang. See this [page](https://en.wikipedia.org/wiki/CHIP-8) for information about the CHIP-8 architecture and opcodes.
+A CHIP-8 emulator written in golang. See this [page](https://en.wikipedia.org/wiki/CHIP-8) for information about the CHIP-8 architecture and opcodes. 
+
+[tcell](https://github.com/gdamore/tcell) is used for the terminal interface.
 
 ## Installation
 Make sure golang is [installed](https://golang.org/doc/install).
@@ -43,3 +45,18 @@ For example, running:
 chip8-emulator roms/chip8-picture
 ```
 from the project root directory will display the chip8 logo.
+
+The keypad layout is:
+```
++-+-+-+-+
+|1|2|3|4|
++-+-+-+-+
+|q|w|e|r|
++-+-+-+-+
+|a|s|d|f|
++-+-+-+-+
+|z|x|c|v|
++-+-+-+-+
+```
+
+To exit the emulator, press either the `ESC` or `Enter` keys.
