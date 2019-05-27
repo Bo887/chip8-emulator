@@ -11,7 +11,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "Chip8 Emulator"
-	app.Description = "An emulator for Chip8 programs. Pass the path to the ROM as the first argument."
+	app.Description = "An emulator for Chip8 programs. Pass the path to the ROM as the first argument. To exit the emulator, press either the [ESC] or [Enter] keys."
 	app.Action = RunEmulator
 
 	err := app.Run(os.Args)
