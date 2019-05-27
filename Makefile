@@ -4,6 +4,7 @@ GOCLEAN = $(GOCMD) clean
 GOTEST = $(GOCMD) test
 GOGET = $(GOCMD) get
 GOINSTALL = $(GOCMD) install
+GOFMT = $(GOCMD) fmt
 
 .PHONY: test
 
@@ -21,6 +22,9 @@ deps:
 
 install:
 	$(GOINSTALL)
+
+format:
+	$(GOFMT) ./...
 
 test:
 	$(GOTEST) -v -coverpkg ./chip8 ./test --race
