@@ -2,7 +2,6 @@ package chip8
 
 import (
     "github.com/gdamore/tcell"
-    "os"
 )
 
 var Keypad = [...]uint8 {
@@ -18,8 +17,6 @@ func (cpu *Cpu) UpdateKeys (screen tcell.Screen) bool {
     case *tcell.EventKey:
         switch ev.Key() {
         case tcell.KeyEscape, tcell.KeyEnter:
-            screen.Fini()
-            os.Exit(0)
             return true
         case tcell.KeyRune:
             for i, elem := range Keypad {

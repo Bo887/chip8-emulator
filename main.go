@@ -7,7 +7,7 @@ import (
 
 func main() {
     cpu := chip8.CreateCpu()
-    err := cpu.LoadProgram("roms/chip8-picture.ch8")
+    err := cpu.LoadProgram("roms/pong.ch8")
     if err != nil {
         println(err.Error())
     }
@@ -19,13 +19,26 @@ func main() {
 
     chip8.InitScreen(screen)
 
+    status := make(chan bool)
+
     go func () {
         for {
-            cpu.UpdateKeys(screen)
+            status <- cpu.UpdateKeys(screen)
         }
     }()
 
     for {
+        var done bool
+        select {
+        case done = <-status:
+        default:
+            done = false
+        }
+
+        if done {
+            break
+        }
+
         err := cpu.Update()
         if err != nil {
             print(err.Error())
