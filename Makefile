@@ -3,7 +3,7 @@ GOBUILD = $(GOCMD) build
 GOCLEAN = $(GOCMD) clean
 GOTEST = $(GOCMD) test
 GOGET = $(GOCMD) get
-GORUN = $(GOCMD) run
+GOINSTALL = $(GOCMD) install
 
 .PHONY: test
 
@@ -17,9 +17,10 @@ deps:
 	$(GOGET) github.com/stretchr/testify/assert
 	$(GOGET) golang.org/x/tools/cmd/cover
 	$(GOGET) github.com/gdamore/tcell
+	$(GOGET) github.com/urfave/cli
 
-run:
-	$(GORUN) main.go
+install:
+	$(GOINSTALL)
 
 test:
-	$(GOTEST) -v -coverpkg ./... ./test --race
+	$(GOTEST) -v -coverpkg ./chip8 ./test --race

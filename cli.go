@@ -1,22 +1,41 @@
 package main
 
 import (
+    "os"
+    "errors"
     "github.com/Bo887/chip8-emulator/chip8"
     "github.com/gdamore/tcell"
+    "github.com/urfave/cli"
 )
 
 func main() {
-    cpu := chip8.CreateCpu()
-    err := cpu.LoadProgram("roms/pong.ch8")
+    app := cli.NewApp()
+    app.Name = "Chip8 Emulator"
+    app.Description = "An emulator for Chip8 programs. Pass the path to the ROM as the first argument."
+    app.Action = RunEmulator
+
+    err := app.Run(os.Args)
     if err != nil {
         println(err.Error())
-        return
+    }
+}
+
+func RunEmulator(c *cli.Context) error {
+    cpu := chip8.CreateCpu()
+    args := c.Args()
+
+    if len(args) != 1 {
+        return errors.New("Not enough arguments present! Please specify the filename of the ROM!")
+    }
+
+    err := cpu.LoadProgram(args.Get(0))
+    if err != nil {
+        return err
     }
 
     screen, err := tcell.NewScreen()
     if err != nil {
-        println(err.Error())
-        return
+        return err
     }
 
     chip8.InitScreen(screen)
@@ -43,8 +62,7 @@ func main() {
 
         err := cpu.Update()
         if err != nil {
-            println(err.Error())
-            break
+            return err
         }
 
         if cpu.ShouldDraw {
@@ -52,4 +70,5 @@ func main() {
         }
     }
     screen.Fini()
+    return nil
 }
