@@ -20,6 +20,7 @@ type Cpu struct {
     Display [NUM_COLS * NUM_ROWS]uint8
     Keypad [KEYPAD_SIZE]uint8
     ShouldDraw bool
+    ShouldCheckKeys bool
     TimeController <-chan time.Time
 }
 
@@ -29,7 +30,7 @@ func CreateCpu() Cpu {
         rv.Memory[i] = Fontset[i]
     }
     rv.PC = PC_START
-    rv.TimeController = time.Tick(time.Second/time.Duration(600))
+    rv.TimeController = time.Tick(time.Second/time.Duration(60))
     return rv
 }
 
@@ -64,6 +65,7 @@ func (cpu *Cpu) LoadProgram(path string) error {
 func (cpu *Cpu) Update() error {
     cpu.Opcode = (uint16(cpu.Memory[cpu.PC]) << 8) | uint16(cpu.Memory[cpu.PC+1])
     cpu.ShouldDraw = false
+    cpu.ShouldCheckKeys = false
     select {
     case <-cpu.TimeController:
         err := cpu.HandleOpcode()

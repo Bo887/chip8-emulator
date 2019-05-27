@@ -269,6 +269,7 @@ func (cpu *Cpu) HandleDXYNOpcode() error {
 }
 
 func (cpu *Cpu) HandleEXOpcodes() error {
+    cpu.ShouldCheckKeys = true
     x := (cpu.Opcode & 0x0F00) >> 8
     switch cpu.Opcode & 0x00FF {
     //skip next instruction if V[x] is pressed
