@@ -24,7 +24,7 @@ func RunEmulator(c *cli.Context) error {
 	cpu := chip8.CreateCpu()
 	args := c.Args()
 
-	if len(args) != 1 {
+	if len(args) < 1 {
 		return errors.New("Not enough arguments present! Please specify the filename of the ROM!")
 	}
 
